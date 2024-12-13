@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f5;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+        }
+        #currentDate {
+            margin-bottom: 20px;
+            font-size: 1.25em;
+        }
+        #datePicker, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            width: 240px; /* 使得输入框与按钮尺寸一致 */
+            box-sizing: border-box;
+        }
+        #countdown {
+            font-size: 3em;
+            margin: 20px 0;
+            color: #333;
+        }
+        .time-box {
+            border: 2px solid #333;
+            padding: 10px;
+            display: inline-block;
+            width: 70px;
+            text-align: center;
+            margin: 0 5px;
+        }
+        .time-label {
+            font-size: 0.75em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="currentDate"></div>
+        <input type="date" id="datePicker">
+        <button onclick="startCountdown()">Start Countdown</button>
+        <button onclick="resetCountdown()">Reset</button>
+        <div id="countdown">Select a date to start the countdown</div>
+    </div>
+
+    <script>
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').innerText = now.toLocaleDateString(undefined, options);
+        }
+
+        let countdownInterval;
+
+        function startCountdown() {
+            const selectedDate = new Date(document.getElementById('datePicker').value).getTime();
+
+            if (isNaN(selectedDate)) {
+                alert("Please select a valid date.");
+                return;
+            }
+
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = selectedDate - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('countdown').innerText = "Countdown Finished";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown').innerHTML = `
+					${days}d : ${hours}h : ${minutes}m : ${seconds}s
+                `;
+            }, 1000);
+        }
+
+        function resetCountdown() {
+            clearInterval(countdownInterval);
+            document.getElementById('countdown').innerText = "Select a date to start the countdown";
+            document.getElementById('datePicker').value = '';
+        }
+
+        updateCurrentDate();
+    </script>
+</body>
+</html>
